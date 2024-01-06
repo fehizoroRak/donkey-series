@@ -1,3 +1,11 @@
+@import "~bootstrap/scss/bootstrap";
+
+$light: #329bf8;
+$danger: #ff4136;
+
 body {
     background-color: rgb(240, 240, 242);
+}
+.navbar-expand-lg{
+    background-color: $light !important;
 }
