@@ -1,12 +1,103 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Donkey Series{% endblock %}
+{% block title %}Donkey Series
+{% endblock %}
 
 {% block body %}
-<h1> Bienvenue ! </h1>
-<!-- <img src="{{ asset('build/images/image1.e74d81f1.jpg')}}" alt=""> -->
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<title>Grid à 2 colonnes</title>
+			<style>
+				/* Style pour la mise en page du tableau */
+				.table {
+					width: 80%;
+					margin: 70px auto;
+					display: grid;
+					grid-template-columns: 1fr 2fr; /* Deux colonnes, la première occupe 1 fraction et la deuxième 2 fractions de l'espace disponible */
+					gap: 10px; /* Espace entre les éléments du tableau */
+				}
 
-</div>
+				/* Style pour la deuxième colonne (grid à 2 colonnes) */
+				.grid-container {
+					display: grid;
+					grid-template-columns: 1fr 1fr; /* Deux colonnes égales dans la deuxième colonne du tableau */
+					gap: 10px; /* Espace entre les éléments de la grille */
+				}
+
+				/* Style pour les éléments de la grille */
+				/* Style pour la mise en page de l'élément de la grille */
+				.grid-item {
+					display: grid;
+					grid-template-rows: auto 1fr auto auto; /* Quatre rangées pour l'image, le titre, la description et les étoiles */
+					gap: 10px; /* Espace entre les éléments de la grille */
+					border: 1px solid #ccc;
+					padding: 10px;
+					text-align: center;
+				}
+
+				/* Style pour l'image */
+				.grid-item img {
+					max-width: 100%; /* Assure que l'image ne dépasse pas la largeur de l'élément */
+					height: auto;
+					border-radius: 5px; /* Coins arrondis pour l'image */
+				}
+
+				/* Style pour le titre */
+				.grid-item h3 {
+					margin: 0;
+				}
+
+				/* Style pour la description */
+				.grid-item p {
+					margin: 0;
+				}
+
+				/* Style pour les étoiles */
+				.grid-item .stars {
+					color: gold;
+				}
+			</style>
+		</head>
+		<body>
+			<div
+				class="table">
+				<!-- Colonne 1 : Liste de catégories -->
+				<div>
+					<h2>Catégories</h2>
+					<ul>
+						<li>Catégorie 1</li>
+						<li>Catégorie 2</li>
+						<li>Catégorie 3</li>
+					</ul>
+				</div>
+
+				<!-- Colonne 2 : Grid à 2 colonnes -->
+				<div class="grid-container">
+					<div class="grid-item d-flex">
+						<!-- Image à gauche -->
+						<img style="width:140px;height:160px;" src="{{ asset('images/image1.jpg') }}" alt="Image">
+
+						<div style="width:350px;">
+							<h3>Titre de l'élément</h3>
+
+							<!-- Description en dessous du titre -->
+							<p>Description de l'élément.</p>
+
+							<!-- Étoiles en bas -->
+							<div class="stars">★★★☆☆</div>
+						</div>
+
+					</div>
+					<div class="grid-item">Élément 2</div>
+					<div class="grid-item">Élément 3</div>
+					<div class="grid-item">Élément 4</div>
+				</div>
+			</div>
+		</body>
+	</html>
+
 {% endblock %}
+
