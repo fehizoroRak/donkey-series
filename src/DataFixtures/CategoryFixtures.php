@@ -25,8 +25,17 @@ class CategoryFixtures extends Fixture
             ],
             [
                 'name' => 'Drame',
+            ],
+            [
+                'name' => 'Aventure',
+            ],
+            [
+                'name' => 'Animation',
+            ],
+            [
+                'name' => 'Fantastique',
             ]
-         
+          
         ];
         
         foreach ($data as $programData) {

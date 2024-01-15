@@ -8,8 +8,10 @@ use App\Entity\Season;
 use App\Form\ProgramType;
 use App\Repository\ProgramRepository;
 use App\Repository\SeasonRepository;
+use App\Service\Slugify;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,13 +27,42 @@ class ProgramController extends AbstractController
             'programs' => $programs,
         ]);
     }
+
+//PARAM CONVERTER
+     //Installer ceci avant: symfony composer require sensio/framework-extra-bundle
+    //  #[ParamConverter("program", class: "App\Entity\Program", options: ["mapping" => ["program_id" => "id"]])]
+    
+  
+#[Route('/show/{slug}', name: 'program_show', methods: ['GET'])]
+#[ParamConverter("program", class: "App\Entity\Program", options: ["mapping" => ["slug" => "slug"]])]
+public function show(Program $program): Response
+{
+    $seasons = $program->getSeasons();
+
+    if (!$program) {
+        throw $this->createNotFoundException(
+            'No program with slug: '.$program->getSlug().' found in program\'s table.'
+        );
+    }
+
+    return $this->render('program/show.html.twig', [
+        'program' => $program,
+        'seasons' => $seasons,
+    ]);
+}
+
     #[Route('/program_new', name: 'program_new')]
-    public function new(Request $request, EntityManagerInterface $em ): Response
+    public function new(Request $request, EntityManagerInterface $em, Slugify $slugify ): Response
     {
         $form=$this->createForm(ProgramType::class);
         $form->handleRequest($request);
+
         // Was the form submitted ?
         if ($form->isSubmitted() && $form->isValid() ) {
+            $program = $form->getData(); // Retrieve the program data from the form
+        // Generate and set the slug
+        $slug = $slugify->generate($program->getTitle());
+        $program->setSlug($slug);
     
             // Persist Program Object
             $em->persist($form->getData());
@@ -44,6 +75,8 @@ class ProgramController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+
 
     // #[Route('/show/{id}', name: 'program_show', methods: ['GET'], requirements: ['id' => '^\d+$'], options: ['expose' => true])]
     // public function show(int $id,ProgramRepository $programRepository): Response
@@ -63,26 +96,26 @@ class ProgramController extends AbstractController
     //     ]);
     // }
 
-     // PARAM CONVERTER
-     // Installer ceci avant: symfony composer require sensio/framework-extra-bundle
-    #[Route('/show/{id}', name: 'program_show', methods: ['GET'], requirements: ['id' => '^\d+$'], options: ['expose' => true])]
-    public function show(Program $program, Season $seasons): Response
+    #[Route('/{slug}/edit', name: 'app_program_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Program $program, EntityManagerInterface $entityManager, Slugify $slugify): Response
     {
-       
-        $seasons = $program->getSeasons();
+        $form = $this->createForm(ProgramType::class, $program);
+        $form->handleRequest($request);
 
-    if (!$program) {
-        throw $this->createNotFoundException(
-            'No program with id : {id} found in program\'s table.'
-        );
-    }
+        if ($form->isSubmitted() && $form->isValid()) {
+            $slug = $slugify->generate($program->getTitle());
+            $program->setSlug($slug);
 
-        return $this->render('program/show.html.twig', [
+            $entityManager->flush();
+
+            return $this->redirectToRoute('program_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->renderForm('program/edit.html.twig', [
             'program' => $program,
-            'seasons' => $seasons,
+            'form' => $form,
         ]);
     }
-
 
 
     // #[Route('/program/{programId}/seasons/{seasonId}', name: 'program_season_show')]
@@ -102,18 +135,18 @@ class ProgramController extends AbstractController
 
     // PARAM CONVERTER
     // Installer ceci avant: symfony composer require sensio/framework-extra-bundle
-    #[Route('/program/{program}/seasons/{season}', name: 'program_season_show')]
-    public function showSeason(Program $program, Season $season, Episode $episodes)
-    {
-    
-        $episodes = $season->getEpisodes();
+    #[Route('/program/{slug}/seasons/{seasonslug}', name: 'program_season_show')]
+public function showSeason(Program $program, Season $season)
+{
+    $episodes = $season->getEpisodes();
 
-        return $this->render('program/season_show.html.twig', [
-            'program' => $program,
-            'season' => $season,
-            'episodes' => $episodes,
-        ]);
-    }
+    return $this->render('program/season_show.html.twig', [
+        'program' => $program,
+        'season' => $season,
+        'episodes' => $episodes,
+    ]);
+}
+
 
 
     #[Route('/program/{program}/season/{season}/episodes/{episodes}', name: 'program_episode_show')]

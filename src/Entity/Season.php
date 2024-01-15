@@ -32,6 +32,9 @@ class Season
     #[ORM\OneToMany(mappedBy: 'season', targetEntity: Episode::class)]
     private Collection $episodes;
 
+    #[ORM\Column(length: 255)]
+    private ?string $seasonslug = null;
+
     public function __construct()
     {
         $this->episodes = new ArrayCollection();
@@ -116,6 +119,18 @@ class Season
                 $episode->setSeason(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getseasonSlug(): ?string
+    {
+        return $this->seasonslug;
+    }
+
+    public function setseasonSlug(string $slug): static
+    {
+        $this->seasonslug = $slug;
 
         return $this;
     }

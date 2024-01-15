@@ -1,0 +1,22 @@
+{# templates/actor/show.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Actors{% endblock %}
+
+{% block body %}
+<h1>{{ actors.name }}</h1>
+
+
+<strong>Associated Programs:</strong>
+<ul>
+    {% for program in actors.programs %}
+        <li><a href="{{ path('program_show', {'slug': program.slug}) }}">{{ program.title }}</a></li>
+    {% else %}
+        <li>No programs associated with this actor</li>
+    {% endfor %}
+</ul>
+
+    <a href="{{ path('program_index') }}">
+        Retour à la liste des programmes
+    </a>
+{% endblock %}

@@ -1,3 +1,11 @@
 controllers:
     resource: ../src/Controller/
     type: attribute
+    
+program_show:
+    path: '/show/{slug}'
+    controller: 'App\Controller\ProgramController::show'
+    requirements:
+        slug: '[a-z0-9-]+'
+
+
